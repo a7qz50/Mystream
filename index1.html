@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centered DASH Player</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.7.1/dash.all.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #videoPlayer {
+            width: 100%;
+            height: auto;
+            max-height: 100vh;
+            border: none;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <video id="videoPlayer" controls autoplay></video>
+
+    <script>
+        (function() {
+            var url = "https://cdn3-mejarhosting.cfd/castx-fhd/index.mpd?token=61931f58547a318255a9aa71284ce35e7c3cd4c0-801d17f1439c4c9bb9ac4e6738bc12d1-1775695138-1775673538&remote=169.224.96.219";
+            var player = dashjs.MediaPlayer().create();
+            var videoElement = document.querySelector("#videoPlayer");
+            
+            player.initialize(videoElement, url, true);
+            
+            // البدء بوضع كتم الصوت لضمان عمل التشغيل التلقائي (Autoplay)
+            videoElement.muted = true; 
+
+            // بعد مرور 3 ثواني (3000 ميلي ثانية) يتم إلغاء كتم الصوت
+            setTimeout(function() {
+                videoElement.muted = false;
+                console.log("تم تفعيل الصوت تلقائياً");
+            }, 3000);
+            
+        })();
+    </script>
+</body>
+</html>
