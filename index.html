@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استوديو البث المباشر الاحترافي</title>
+    <!-- استيراد الأيقونات والتصميم -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div style="font-weight: bold; color: #a78bfa;"><i class="fa-solid fa-tower-broadcast"></i> Live TV Studio (Vercel Ready)</div>
+        <div class="stream-status">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText" style="font-size: 12px;">غير متصل (00:00:00)</span>
+        </div>
+    </header>
+
+    <div class="obs-container">
+        <div class="top-screens-area">
+            <div class="screen-box">
+                <div class="screen-title"><i class="fa-solid fa-eye"></i> معاينة (Preview)</div>
+                <div class="screen-content">
+                    <div class="video-placeholder" id="previewPlaceholder">
+                        <i class="fa-solid fa-desktop"></i>
+                        <p>شاشة التجهيز والمطالعة</p>
+                    </div>
+                    <video id="previewVideo" autoplay playsinline></video>
+                    <video id="previewUrlVideo" controls loop playsinline></video>
+                    <img id="previewLogo" class="tv-logo" alt="Logo">
+                </div>
+            </div>
+
+            <div class="screen-box" style="border-color: #3b82f6;">
+                <div class="screen-title" style="color: #60a5fa;"><i class="fa-solid fa-circle-play"></i> البث المباشر (Program Output)</div>
+                <div class="screen-content">
+                    <div class="video-placeholder" id="programPlaceholder">
+                        <i class="fa-solid fa-tower-broadcast"></i>
+                        <p>شكل البث الحقيقي للمشاهدين</p>
+                    </div>
+                    <video id="programVideo" autoplay playsinline></video>
+                    <video id="programUrlVideo" controls loop playsinline></video>
+                    <img id="programLogo" class="tv-logo" alt="Logo">
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-panels-area">
+            <div class="panel">
+                <div class="panel-header">المصادر (Sources)</div>
+                <div class="panel-body">
+                    <button class="btn-obs" id="btnWebcam"><i class="fa-solid fa-video" style="color:#60a5fa;"></i> كاميرا الويب</button>
+                    <button class="btn-obs" id="btnDisplayCapture"><i class="fa-solid fa-desktop" style="color:#34d399;"></i> التقاط سطح المكتب</button>
+                    
+                    <div class="control-group" style="margin-top: 4px;">
+                        <label style="font-size:10px;">رابط فيديو خارجي:</label>
+                        <div style="display: flex; gap: 4px;">
+                            <input type="text" id="videoUrlInput" placeholder="رابط mp4..." style="flex:1;">
+                            <button id="btnLoadUrl" style="background:#3b82f6; border:none; color:white; padding:2px 6px; border-radius:3px; cursor:pointer;">تشغيل</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">إعدادات الشعار (Logo)</div>
+                <div class="panel-body">
+                    <div class="control-group">
+                        <label style="font-size:10px;">صورة الشعار:</label>
+                        <input type="file" id="logoFile" accept="image/*">
+                    </div>
+                    <div class="control-group">
+                        <label style="font-size:10px;">مكان الشعار:</label>
+                        <select id="logoPosition">
+                            <option value="pos-top-right">أعلى اليمين</option>
+                            <option value="pos-top-left">أعلى اليسار</option>
+                            <option value="pos-bottom-right">أسفل اليمين</option>
+                            <option value="pos-bottom-left">أسفل اليسار</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">مستوى الصوت (Audio Mixer)</div>
+                <div class="panel-body" style="justify-content: center; gap: 10px;">
+                    <div class="audio-meter-row">
+                        <span style="font-size:10px; width:45px;">Mic/Aux</span>
+                        <div class="meter-bar"><div class="meter-fill" id="micMeter"></div></div>
+                    </div>
+                    <div class="audio-meter-row">
+                        <span style="font-size:10px; width:45px;">Desktop</span>
+                        <div class="meter-bar"><div class="meter-fill" style="width: 35%;"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">التحكم (Controls)</div>
+                <div class="panel-body">
+                    <div class="obs-main-btns">
+                        <button class="btn-action btn-stream" id="btnStartStream"><i class="fa-solid fa-play"></i> بدء البث المباشر</button>
+                        <button class="btn-action btn-record" onclick="alert('جاري تسجيل البث محلياً...')"><i class="fa-solid fa-circle"></i> تسجيل محلي</button>
+                        <button class="btn-action btn-settings-panel" id="btnOpenSettings"><i class="fa-solid fa-gear"></i> إعدادات المنصة</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إعدادات المنصات -->
+    <div id="settingsModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span><i class="fa-solid fa-gear"></i> إعدادات البث (اختر المنصة)</span>
+                <i class="fa-solid fa-xmark" id="btnCloseModalX" style="cursor: pointer;"></i>
+            </div>
+            <div class="modal-body">
+                <div class="control-group">
+                    <label>منصة البث:</label>
+                    <select id="streamPlatformSelect">
+                        <option value="custom">مخصص (Custom RTMP)</option>
+                        <option value="youtube">يوتيوب (YouTube Live)</option>
+                        <option value="facebook">فيسبوك (Facebook Live)</option>
+                        <option value="twitter">تويتر / إكس (X / Twitter)</option>
+                        <option value="tiktok">تيك توك (TikTok Live)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>رابط الخادم (Server URL):</label>
+                    <input type="text" id="serverUrlInput" placeholder="rtmp://...">
+                </div>
+                <div class="control-group">
+                    <label>مفتاح البث (Stream Key):</label>
+                    <input type="password" id="streamKeyInput" placeholder="أدخل مفتاح البث السري...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close-modal" id="btnCloseModal">إلغاء</button>
+                <button class="btn-save-modal" id="btnSaveSettings">حفظ الإعدادات</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- البرمجة التفاعلية -->
+    <script>
+        const previewVideo = document.getElementById('previewVideo');
+        const previewUrlVideo = document.getElementById('previewUrlVideo');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const previewLogo = document.getElementById('previewLogo');
+
+        const programVideo = document.getElementById('programVideo');
+        const programUrlVideo = document.getElementById('programUrlVideo');
+        const programPlaceholder = document.getElementById('programPlaceholder');
+        const programLogo = document.getElementById('programLogo');
+
+        let currentStream = null;
+
+        function resetAllScreens() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            previewVideo.style.display = 'none';
+            previewUrlVideo.style.display = 'none';
+            previewUrlVideo.pause();
+            previewPlaceholder.style.display = 'block';
+
+            programVideo.style.display = 'none';
+            programUrlVideo.style.display = 'none';
+            programUrlVideo.pause();
+            programPlaceholder.style.display = 'block';
+        }
+
+        document.getElementById('btnWebcam').addEventListener('click', async () => {
+            try {
+                resetAllScreens();
+                currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                
+                previewVideo.srcObject = currentStream;
+                previewVideo.style.display = 'block';
+                previewPlaceholder.style.display = 'none';
+
+                programVideo.srcObject = currentStream;
+                programVideo.style.display = 'block';
+                programPlaceholder.style.display = 'none';
+
+                initAudioMeter(currentStream);
+            } catch (err) {
+                alert('تعذر تشغيل الكاميرا.');
+            }
+        });
+
+        document.getElementById('btnDisplayCapture').addEventListener('click', async () => {
+            try {
+                resetAllScreens();
+                currentStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                
+                previewVideo.srcObject = currentStream;
+                previewVideo.style.display = 'block';
+                previewPlaceholder.style.display = 'none';
+
+                programVideo.srcObject = currentStream;
+                programVideo.style.display = 'block';
+                programPlaceholder.style.display = 'none';
+
+                initAudioMeter(currentStream);
+            } catch (err) {}
+        });
+
+        document.getElementById('btnLoadUrl').addEventListener('click', () => {
+            const url = document.getElementById('videoUrlInput').value.trim();
+            if (url) {
+                resetAllScreens();
+                
+                previewUrlVideo.src = url;
+                previewUrlVideo.style.display = 'block';
+                previewPlaceholder.style.display = 'none';
+                previewUrlVideo.play().catch(e => alert('تأكد من صحة الرابط.'));
+
+                programUrlVideo.src = url;
+                programUrlVideo.style.display = 'block';
+                programPlaceholder.style.display = 'none';
+                programUrlVideo.play();
+            } else {
+                alert('الرجاء إدخال رابط أولاً.');
+            }
+        });
+
+        const logoFile = document.getElementById('logoFile');
+        const logoPosition = document.getElementById('logoPosition');
+
+        logoFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imgSrc = event.target.result;
+                    previewLogo.src = imgSrc;
+                    previewLogo.style.display = 'block';
+                    programLogo.src = imgSrc;
+                    programLogo.style.display = 'block';
+                    updateLogoPositions();
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        logoPosition.addEventListener('change', updateLogoPositions);
+
+        function updateLogoPositions() {
+            const posClass = logoPosition.value;
+            previewLogo.className = 'tv-logo ' + posClass;
+            programLogo.className = 'tv-logo ' + posClass;
+        }
+
+        const settingsModal = document.getElementById('settingsModal');
+        const btnOpenSettings = document.getElementById('btnOpenSettings');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        const btnCloseModalX = document.getElementById('btnCloseModalX');
+        const btnSaveSettings = document.getElementById('btnSaveSettings');
+        const streamPlatformSelect = document.getElementById('streamPlatformSelect');
+        const serverUrlInput = document.getElementById('serverUrlInput');
+
+        const defaultUrls = {
+            custom: "rtmp://",
+            youtube: "rtmp://a.rtmp.youtube.com/live2",
+            facebook: "rtmps://live-api-s.facebook.com:443/rtmp/",
+            twitter: "rtmp://pscp.tv:80/x/",
+            tiktok: "rtmps://push.tiktok.com/live/"
+        };
+
+        streamPlatformSelect.addEventListener('change', (e) => {
+            serverUrlInput.value = defaultUrls[e.target.value] || "";
+        });
+
+        btnOpenSettings.addEventListener('click', () => { settingsModal.style.display = 'flex'; });
+        function closeModal() { settingsModal.style.display = 'none'; }
+        btnCloseModal.addEventListener('click', closeModal);
+        btnCloseModalX.addEventListener('click', closeModal);
+        btnSaveSettings.addEventListener('click', () => { alert('تم حفظ إعدادات المنصة بنجاح!'); closeModal(); });
+
+        let streamTimer = null;
+        let secondsElapsed = 0;
+        const btnStartStream = document.getElementById('btnStartStream');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+
+        btnStartStream.addEventListener('click', () => {
+            if (!btnStartStream.classList.contains('active')) {
+                btnStartStream.classList.add('active');
+                btnStartStream.innerHTML = '<i class="fa-solid fa-stop"></i> إيقاف البث';
+                statusDot.classList.add('active');
+                secondsElapsed = 0;
+                streamTimer = setInterval(() => {
+                    secondsElapsed++;
+                    let hrs = String(Math.floor(secondsElapsed / 3600)).padStart(2, '0');
+                    let mins = String(Math.floor((secondsElapsed % 3600) / 60)).padStart(2, '0');
+                    let secs = String(secondsElapsed % 60).padStart(2, '0');
+                    statusText.innerText = `متصل (${hrs}:${mins}:${secs})`;
+                }, 1000);
+            } else {
+                btnStartStream.classList.remove('active');
+                btnStartStream.innerHTML = '<i class="fa-solid fa-play"></i> بدء البث المباشر';
+                statusDot.classList.remove('active');
+                statusText.innerText = 'غير متصل (00:00:00)';
+                clearInterval(streamTimer);
+            }
+        });
+
+        function initAudioMeter(stream) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const microphone = audioContext.createMediaStreamSource(stream);
+                const analyzer = audioContext.createAnalyser();
+                microphone.connect(analyzer);
+                const dataArray = new Uint8Array(analyzer.frequencyBinCount);
+                const micMeter = document.getElementById('micMeter');
+
+                function updateMeter() {
+                    analyzer.getByteFrequencyData(dataArray);
+                    let average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+                    micMeter.style.width = Math.min(100, (average / 128) * 100) + '%';
+                    requestAnimationFrame(updateMeter);
+                }
+                updateMeter();
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>
