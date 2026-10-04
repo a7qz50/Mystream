@@ -18,7 +18,7 @@
                 <i class="fa-solid fa-tower-broadcast animate-pulse"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">إعدادات البث المباشر</h1>
-            <p class="text-gray-400 text-sm mt-1">قم بربط هذه البيانات مع برنامج البث الخاص بك (مثل OBS)</p>
+            <p class="text-gray-400 text-sm mt-1">البيانات مخصصة تلقائياً لدومين موقعك الحالي</p>
         </div>
 
         <!-- نموذج معلومات البث -->
@@ -31,7 +31,6 @@
                 </label>
                 <div class="flex">
                     <input type="text" id="rtmpUrl" readonly 
-                        value="rtmp://live.your-project.vercel.app/live" 
                         class="w-full bg-gray-950 border border-gray-700 rounded-r-xl px-4 py-3 text-gray-300 text-sm focus:outline-none focus:border-indigo-500">
                     <button onclick="copyToClipboard('rtmpUrl', 'urlBtn')" id="urlBtn"
                         class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 rounded-l-xl transition flex items-center justify-center font-medium text-sm">
@@ -62,11 +61,10 @@
             <!-- زر النسخ السريع لرابط المشاهدة -->
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">
-                    <i class="fa-solid fa-link ml-1 text-green-400"></i> رابط صفحة المشاهدة (على Vercel)
+                    <i class="fa-solid fa-link ml-1 text-green-400"></i> رابط صفحة المشاهدة
                 </label>
                 <div class="flex">
                     <input type="text" id="fullStreamLink" readonly 
-                        value="https://your-project.vercel.app/watch" 
                         class="w-full bg-gray-950 border border-gray-700 rounded-r-xl px-4 py-3 text-gray-300 text-sm focus:outline-none focus:border-green-500">
                     <button onclick="copyToClipboard('fullStreamLink', 'fullBtn')" id="fullBtn"
                         class="bg-green-600 hover:bg-green-700 text-white px-5 rounded-l-xl transition flex items-center justify-center font-medium text-sm">
@@ -79,8 +77,15 @@
 
     </div>
 
-    <!-- سكربت لبرمجة وظيفة النسخ -->
+    <!-- سكربت جلب الدومين تلقائياً وبرمجة أزرار النسخ -->
     <script>
+        // جلب اسم النطاق الحالي الذي يعمل عليه الموقع (Domain)
+        const currentHost = window.location.host; 
+
+        // وضع النطاق تلقائياً في الحقول بناءً على رابط الموقع الفعلي
+        document.getElementById('rtmpUrl').value = `rtmp://${currentHost}/live`;
+        document.getElementById('fullStreamLink').value = `https://${currentHost}/watch`;
+
         function copyToClipboard(elementId, buttonId) {
             const inputElement = document.getElementById(elementId);
             const isPassword = inputElement.type === 'password';
@@ -113,5 +118,4 @@
     </script>
 
 </body>
-    </html>
-    
+</html>
