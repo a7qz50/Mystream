@@ -3,119 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إنشاء بث مباشر - RTMP</title>
-    <!-- تضمين Tailwind CSS للتصميم -->
+    <title>منصة البث المباشر</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Video.js للتشغيل -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
 </head>
-<body class="bg-gray-950 text-gray-100 font-sans min-h-screen flex items-center justify-center p-4">
+<body class="bg-gray-950 text-gray-100 font-sans min-h-screen p-4 md:p-8 flex flex-col items-center">
 
-    <div class="w-full max-w-lg bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl p-6 md:p-8">
+    <div class="w-full max-w-4xl space-y-8">
         
-        <!-- عنوان الصفحة -->
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-red-600/10 text-red-500 rounded-full mb-4 text-2xl">
+        <!-- عنوان الموقع -->
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-red-600/10 text-red-500 rounded-full mb-3 text-2xl">
                 <i class="fa-solid fa-tower-broadcast animate-pulse"></i>
             </div>
-            <h1 class="text-2xl font-bold text-white">إعدادات البث المباشر</h1>
-            <p class="text-gray-400 text-sm mt-1">البيانات مخصصة تلقائياً لدومين موقعك الحالي</p>
+            <h1 class="text-3xl font-bold text-white">لوحة البث المباشر</h1>
+            <p class="text-gray-400 text-sm mt-1">قم بربط إعدادات الـ RTMP ببرنامج البث وشاهد المباشر في الأسفل</p>
         </div>
 
-        <!-- نموذج معلومات البث -->
-        <div class="space-y-6">
+        <!-- قسم إعدادات البث (RTMP) -->
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl shadow-xl p-6">
+            <h2 class="text-lg font-bold text-white mb-4 flex items-center">
+                <i class="fa-solid fa-sliders ml-2 text-indigo-400"></i> إعدادات برنامج البث (OBS)
+            </h2>
             
-            <!-- حقل رابط خادم RTMP -->
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">
-                    <i class="fa-solid fa-server ml-1 text-indigo-400"></i> خادم الـ RTMP (Server URL)
-                </label>
-                <div class="flex">
-                    <input type="text" id="rtmpUrl" readonly 
-                        class="w-full bg-gray-950 border border-gray-700 rounded-r-xl px-4 py-3 text-gray-300 text-sm focus:outline-none focus:border-indigo-500">
-                    <button onclick="copyToClipboard('rtmpUrl', 'urlBtn')" id="urlBtn"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 rounded-l-xl transition flex items-center justify-center font-medium text-sm">
-                        <i class="fa-regular fa-copy ml-1"></i> نسخ
-                    </button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- رابط خادم RTMP -->
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">رابط الخادم (Server)</label>
+                    <div class="flex">
+                        <input type="text" id="rtmpUrl" readonly class="w-full bg-gray-950 border border-gray-700 rounded-r-lg px-3 py-2 text-gray-300 text-xs">
+                        <button onclick="copyToClipboard('rtmpUrl', 'urlBtn')" id="urlBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 rounded-l-lg text-xs font-medium">نسخ</button>
+                    </div>
+                </div>
+
+                <!-- مفتاح البث -->
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">مفتاح البث (Stream Key)</label>
+                    <div class="flex">
+                        <input type="password" id="streamKey" readonly class="w-full bg-gray-950 border border-gray-700 rounded-r-lg px-3 py-2 text-gray-300 text-xs">
+                        <button onclick="copyToClipboard('streamKey', 'keyBtn')" id="keyBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 rounded-l-lg text-xs font-medium">نسخ</button>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- حقل مفتاح البث -->
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">
-                    <i class="fa-solid fa-key ml-1 text-yellow-400"></i> مفتاح البث (Stream Key)
-                </label>
-                <div class="flex">
-                    <input type="password" id="streamKey" readonly 
-                        value="live_sec_9384759283" 
-                        class="w-full bg-gray-950 border border-gray-700 rounded-r-xl px-4 py-3 text-gray-300 text-sm focus:outline-none focus:border-indigo-500">
-                    <button onclick="copyToClipboard('streamKey', 'keyBtn')" id="keyBtn"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 rounded-l-xl transition flex items-center justify-center font-medium text-sm">
-                        <i class="fa-regular fa-copy ml-1"></i> نسخ
-                    </button>
+        <!-- قسم صفحة المشاهدة (مشغل الفيديو) -->
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-4 bg-gray-900/50 border-b border-gray-800 flex justify-between items-center">
+                <div class="flex items-center space-x-2 space-x-reverse">
+                    <span class="relative flex h-3 w-3">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    <span class="font-bold text-sm text-white">مشاهدة البث الحي</span>
                 </div>
-                <p class="text-xs text-gray-500 mt-1">تنبيه: لا تشارك مفتاح البث مع أي شخص حفاظاً على قناتك.</p>
+                <span class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full font-medium">LIVE</span>
             </div>
 
-            <hr class="border-gray-800 my-4">
-
-            <!-- زر النسخ السريع لرابط المشاهدة -->
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">
-                    <i class="fa-solid fa-link ml-1 text-green-400"></i> رابط صفحة المشاهدة
-                </label>
-                <div class="flex">
-                    <input type="text" id="fullStreamLink" readonly 
-                        class="w-full bg-gray-950 border border-gray-700 rounded-r-xl px-4 py-3 text-gray-300 text-sm focus:outline-none focus:border-green-500">
-                    <button onclick="copyToClipboard('fullStreamLink', 'fullBtn')" id="fullBtn"
-                        class="bg-green-600 hover:bg-green-700 text-white px-5 rounded-l-xl transition flex items-center justify-center font-medium text-sm">
-                        <i class="fa-regular fa-copy ml-1"></i> نسخ الرابط
-                    </button>
-                </div>
+            <!-- مشغل الفيديو -->
+            <div class="relative w-full aspect-video bg-black flex items-center justify-center">
+                <video
+                    id="livePlayer"
+                    class="video-js vjs-big-play-centered vjs-fluid w-full h-full"
+                    controls
+                    preload="auto"
+                    data-setup='{}'>
+                    <!-- ضع رابط الـ HLS الخاص بسيرفرك هنا (.m3u8) -->
+                    <source src="http://YOUR_SERVER_IP:8000/live/stream/index.m3u8" type="application/x-mpegURL" />
+                    <p class="vjs-no-js">يرجى تفعيل JavaScript لمشاهدة البث.</p>
+                </video>
             </div>
-
         </div>
 
     </div>
 
-    <!-- سكربت جلب الدومين تلقائياً وبرمجة أزرار النسخ -->
+    <!-- السكربتات البرمجية -->
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script>
-        // جلب اسم النطاق الحالي الذي يعمل عليه الموقع (Domain)
-        const currentHost = window.location.host; 
-
-        // وضع النطاق تلقائياً في الحقول بناءً على رابط الموقع الفعلي
+        // جلب الدومين تلقائياً
+        const currentHost = window.location.host;
         document.getElementById('rtmpUrl').value = `rtmp://${currentHost}/live`;
-        document.getElementById('fullStreamLink').value = `https://${currentHost}/watch`;
 
+        // توليد مفتاح بث عشوائي
+        function generateRandomKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let key = 'live_';
+            for (let i = 0; i < 15; i++) key += chars.charAt(Math.floor(Math.random() * chars.length));
+            return key;
+        }
+        document.getElementById('streamKey').value = generateRandomKey();
+
+        // وظيفة النسخ
         function copyToClipboard(elementId, buttonId) {
-            const inputElement = document.getElementById(elementId);
-            const isPassword = inputElement.type === 'password';
-            if (isPassword) inputElement.type = 'text';
-            
-            inputElement.select();
-            inputElement.setSelectionRange(0, 99999);
-            
-            navigator.clipboard.writeText(inputElement.value).then(() => {
-                if (isPassword) inputElement.type = 'password';
-                
+            const input = document.getElementById(elementId);
+            const isPass = input.type === 'password';
+            if (isPass) input.type = 'text';
+            input.select();
+            navigator.clipboard.writeText(input.value).then(() => {
+                if (isPass) input.type = 'password';
                 const btn = document.getElementById(buttonId);
-                const originalHTML = btn.innerHTML;
-                
-                btn.innerHTML = '<i class="fa-solid fa-check ml-1"></i> تم النسخ!';
-                btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'bg-green-600', 'hover:bg-green-700');
-                btn.classList.add('bg-emerald-600');
-                
+                const oldText = btn.innerHTML;
+                btn.innerHTML = 'تم!';
+                btn.classList.replace('bg-indigo-600', 'bg-emerald-600');
                 setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.classList.remove('bg-emerald-600');
-                    if(buttonId === 'fullBtn') {
-                        btn.classList.add('bg-green-600', 'hover:bg-green-700');
-                    } else {
-                        btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
-                    }
-                }, 2000);
+                    btn.innerHTML = oldText;
+                    btn.classList.replace('bg-emerald-600', 'bg-indigo-600');
+                }, 1500);
             });
         }
     </script>
-
 </body>
 </html>
